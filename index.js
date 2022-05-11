@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+
 // const Excel = require("exceljs");
 
 async function start() {
@@ -15,109 +16,135 @@ async function start() {
   const browser = await puppeteer.connect({
     browserWSEndpoint: wsChromeEndpointUrl,
   });
+  const websiteUrl = "https://app.dealroom.co/dashboard";
 
   // creates new tab
   const page = await browser.newPage();
-  await page.goto("https://app.dealroom.co/companies/blockfi");
 
-  async function getInfoBySelector(selector) {
-    await page.waitForSelector(selector);
-    return await page.$eval(selector, (element) => element.innerText);
-  }
+  const companiesArray = ["Blockchain", "Polkadot", "BlockFi"];
+  await page.goto(websiteUrl);
 
-  async function getJobsInfoBySelector(pageSelector, listSelector) {
-    await page.waitForTimeout(5000);
-    await page.click(pageSelector);
+  for (const element of companiesArray) {
+    await page.waitForTimeout(3000);
 
-    await page.waitForSelector(listSelector);
-    await page.waitForTimeout(1000);
-
-    return await page.$$eval(listSelector, (els) =>
-      els.map((e) => ({
-        jobTitle: JSON.stringify(e.innerText.toString())
-          .split("\\")[0]
-          .substring(1),
-        basedIn: JSON.stringify(e.innerText.toString())
-          .split("\\")[1]
-          .substring(9),
-        postedOn: JSON.stringify(e.innerText.toString())
-          .split("\\")[2]
-          .substring(10)
-          .slice(0, -1),
-        link: e.innerHTML.match(/(https?:\/\/[^\s]+)/g)[0].slice(0, -1),
-      }))
+    await page.type(
+      "#app > div > div.top-fixed-content > header > div:nth-child(3) > div > div > div > div > input",
+      element
     );
-  }
 
-  function getIsCompanyHiring(jobs) {
-    let jobsAmount = jobs.replace(/[^0-9]+/g, "");
+    await page.waitForTimeout(3000);
 
-    return parseInt(jobsAmount) > 0;
-  }
+    await page.click("#react-autowhatever-1--item-0");
 
-  // async function writeInFile(index, value) {
-  //   // Reading our test file
-  //   let file = 'C:\\Users\\BohdanF\\Desktop\\test.xlsx';
-  //
-  //   var workbook = new Excel.Workbook();
-  //   workbook.xlsx.readFile(file)
-  //       .then(function()  {
-  //         var worksheet = workbook.getWorksheet(1);
-  //         var lastRow = worksheet.lastRow;
-  //         // var getRowInsert = worksheet.getRow(++(lastRow.number));
-  //         var getRowInsert = worksheet.getRow(4);
-  //         getRowInsert.getCell(index).value = value;
-  //         getRowInsert.commit();
-  //         return workbook.xlsx.writeFile(file);
-  //       });
-  // //await writeInFile("G", companyValuation);
-  //
-  // }
+    await page.waitForTimeout(3000);
 
-  const companyName = await getInfoBySelector(
-    "#window-scrollbar > div:nth-child(1) > main > div > div > section > div.card__content.card__content--with-padding > div > div.title-tagline-column > div.item-name > h1"
-  );
-  console.log("companyName: " + companyName);
+    async function getInfoBySelector(selector) {
+      //await page.waitForSelector(selector);
+      await page.waitForTimeout(3000);
+      if ((await page.$(selector)) !== null) {
+        return await page.$eval(selector, (element) => element.innerText);
+      } else return "-";
+    }
 
-  const companyValuation = await getInfoBySelector(
-    "#tooltip-20 > span:nth-child(1) > span"
-  );
-  console.log("Company Valuation: " + companyValuation);
+    async function getJobsInfoBySelector(pageSelector, listSelector) {
+      await page.waitForTimeout(5000);
+      await page.click(pageSelector);
 
-  const companyTotalFunding = await getInfoBySelector(
-    "#window-scrollbar > div:nth-child(1) > main > div > div > div.layout-container.company-overview > div > div:nth-child(1) > section:nth-child(3) > div.card__content.card__content--with-padding > table > tfoot > tr"
-  );
-  console.log(
-    "Company total funding: " +
-      companyTotalFunding.replace("Total Funding", "").trim()
-  );
+      await page.waitForSelector(listSelector);
+      await page.waitForTimeout(1000);
 
-  const isCompanyHiring = await getInfoBySelector(
-    "#window-scrollbar > div:nth-child(1) > main > div > div > section > footer > div > a:nth-child(7) > span"
-  );
-  console.log("Is company hiring?: " + getIsCompanyHiring(isCompanyHiring));
+      return await page.$$eval(listSelector, (els) =>
+        els.map((e) => ({
+          jobTitle: JSON.stringify(e.innerText.toString())
+            .split("\\")[0]
+            .substring(1),
+          basedIn: JSON.stringify(e.innerText.toString())
+            .split("\\")[1]
+            .substring(9),
+          postedOn: JSON.stringify(e.innerText.toString())
+            .split("\\")[2]
+            .substring(10)
+            .slice(0, -1),
+          link: e.innerHTML.match(/(https?:\/\/[^\s]+)/g)[0].slice(0, -1),
+        }))
+      );
+    }
 
-  const companyWebsite = await getInfoBySelector(
-    "#window-scrollbar > div:nth-child(1) > main > div > div > section > div.card__content.card__content--with-padding > div > div.title-tagline-column > div.item-details-info__details.info > div.item-details-info__website > a"
-  );
-  console.log("Company website: " + companyWebsite);
+    function getIsCompanyHiring(jobs) {
+      let jobsAmount = jobs.replace(/[^0-9]+/g, "");
 
-  const companyLinkedIn = await getInfoBySelector(
+      return parseInt(jobsAmount) > 0;
+    }
+
+    // async function writeInFile(index, value) {
+    //   // Reading our test file
+    //   let file = 'C:\\Users\\BohdanF\\Desktop\\test.xlsx';
+    //
+    //   var workbook = new Excel.Workbook();
+    //   workbook.xlsx.readFile(file)
+    //       .then(function()  {
+    //         var worksheet = workbook.getWorksheet(1);
+    //         var lastRow = worksheet.lastRow;
+    //         // var getRowInsert = worksheet.getRow(++(lastRow.number));
+    //         var getRowInsert = worksheet.getRow(4);
+    //         getRowInsert.getCell(index).value = value;
+    //         getRowInsert.commit();
+    //         return workbook.xlsx.writeFile(file);
+    //       });
+    // //await writeInFile("G", companyValuation);
+    //
+    // }
+
+    const companyName = await getInfoBySelector(
+      "#window-scrollbar > div:nth-child(1) > main > div > div > section > div.card__content.card__content--with-padding > div > div.title-tagline-column > div.item-name > h1"
+    );
+    console.log("companyName: " + companyName);
+
+    const companyValuation = await getInfoBySelector(".valuation__value");
+    console.log("Company Valuation: " + companyValuation);
+
+    const companyTotalFunding = await getInfoBySelector(
+      "#window-scrollbar > div:nth-child(1) > main > div > div > div.layout-container.company-overview > div > div:nth-child(1) > section:nth-child(3) > div.card__content.card__content--with-padding > table > tfoot > tr"
+    );
+    console.log(
+      "Company total funding: " +
+        companyTotalFunding.replace("Total Funding", "").trim()
+    );
+
+    const isCompanyHiring = await getInfoBySelector(
+      "#window-scrollbar > div:nth-child(1) > main > div > div > section > footer > div > a:nth-child(7) > span"
+    );
+    console.log("Is company hiring?: " + getIsCompanyHiring(isCompanyHiring));
+
+    const companyWebsite = await getInfoBySelector(
+      "#window-scrollbar > div:nth-child(1) > main > div > div > section > div.card__content.card__content--with-padding > div > div.title-tagline-column > div.item-details-info__details.info > div.item-details-info__website > a"
+    );
+    console.log("Company website: " + companyWebsite);
+
+    const companyLinkedIn = await getInfoBySelector(
       "#window-scrollbar > div:nth-child(1) > main > div > div > section > div.card__content.card__content--with-padding > div > div.title-tagline-column > div.item-details-info__details.info > div.item-details-info__website > div > a:nth-child(3) > span.accessible-hide"
-  );
-  console.log("Company LinkedIn: " + companyLinkedIn);
+    );
+    console.log("Company LinkedIn: " + companyLinkedIn);
 
-  const companyNumberOfEmployees = await getInfoBySelector(
+    const companyNumberOfEmployees = await getInfoBySelector(
       "#window-scrollbar > div:nth-child(1) > main > div > div > div.layout-container.company-overview > div > div:nth-child(1) > section.box.card.company-info > div.card__content.card__content--with-padding > div > div.field.employees > div.description > span > a"
-  );
-  console.log("Company number of employees: " + companyNumberOfEmployees);
+    );
+    console.log("Company number of employees: " + companyNumberOfEmployees);
 
-  const companyJobs = await getJobsInfoBySelector(
-    "#window-scrollbar > div:nth-child(1) > main > div > div > section > footer > div > a:nth-child(7)",
-    ".company-card__slot1"
-  );
-  console.log("Company jobs: " + JSON.stringify(companyJobs));
+    if (getIsCompanyHiring(isCompanyHiring)) {
+      const companyJobs = await getJobsInfoBySelector(
+        "#window-scrollbar > div:nth-child(1) > main > div > div > section > footer > div > a:nth-child(7)",
+        ".company-card__slot1"
+      );
+      console.log("Company jobs: " + JSON.stringify(companyJobs));
+    } else {
+      console.log("Company jobs: -");
+    }
 
+    await page.waitForTimeout(3000);
+    await page.goto(websiteUrl);
+    await page.waitForTimeout(3000);
+  }
   //await browser.close();
 }
 
