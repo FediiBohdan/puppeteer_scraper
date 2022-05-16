@@ -1,2 +1,9 @@
 # Project exclude paths
 /node_modules/
+.idea/google-java-format.xml
+.idea/jsLibraryMappings.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/prettier.xml
+.idea/workspace.xml
