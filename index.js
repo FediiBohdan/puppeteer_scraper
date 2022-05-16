@@ -11,7 +11,7 @@ async function start() {
    * Go to http://127.0.0.1:9222/json/version to find current endpoint.
    */
   const wsChromeEndpointUrl =
-    "ws://127.0.0.1:9222/devtools/browser/ad7122b9-c830-4434-bfa9-94903db02651";
+    "ws://127.0.0.1:9222/devtools/browser/771dfae4-83cf-4864-ad7e-c9bc3cba0e07";
   const browser = await puppeteer.connect({
     browserWSEndpoint: wsChromeEndpointUrl,
   });
@@ -19,9 +19,7 @@ async function start() {
 
   const page = await browser.newPage();
 
-  //const companiesArray = ["BlockFi", "Polkadot"];
-  //const companiesArray = ["Polkadot"];
-  const companiesArray = ["Clearco", "Plusius"];
+  const companiesArray = ["BlockFi", "Polkadot"];
 
   await page.goto(websiteUrl);
 
@@ -47,10 +45,10 @@ async function start() {
       "#app > div > div.top-fixed-content > header > div:nth-child(3) > div > div > div > div > input",
       element
     );
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(3000);
 
     await page.click("#react-autowhatever-1--item-0");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
     async function getInfoBySelector(selector) {
       //await page.waitForSelector(selector);
