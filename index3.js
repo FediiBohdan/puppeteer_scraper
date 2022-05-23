@@ -11,33 +11,28 @@ async function start() {
    * Go to http://127.0.0.1:9222/json/version to find current endpoint.
    */
   const wsChromeEndpointUrl =
-    "ws://127.0.0.1:9222/devtools/browser/76b7e0d8-dfb6-45c0-b96f-e80602d82dae";
+    "ws://127.0.0.1:9222/devtools/browser/dad875a5-b69f-40fd-9340-a6e70ecc206e";
   const browser = await puppeteer.connect({
     browserWSEndpoint: wsChromeEndpointUrl,
   });
+
   const websiteUrl = "https://www.linkedin.com/feed/";
 
   const page = await browser.newPage();
 
   // paste needed list
   const focusArray = [
-    "Shane 'Spike' Desloges Boaters OS",
+    "Matthias Laug Tier Mobility",
+    "Rahul Vohra Superhuman",
+    "Nnamdi Emelifeonwu Definely",
   ];
 
   await page.goto(websiteUrl);
 
-  // async function writeInFile(content) {
-  //   try {
-  //     await fs.appendFile("C:\\Users\\BohdanF\\Desktop\\test.txt", content)
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
-
   async function writeInCSVFile(content) {
     try {
       await fs.appendFile(
-        "C:\\Users\\BohdanF\\Desktop\\leadLinkedIn.csv",
+        "C:\\Users\\BohdanF\\Desktop\\leadLinkedIn1.csv",
         content
       );
     } catch (err) {
@@ -53,7 +48,7 @@ async function start() {
     await page.waitForTimeout(750);
 
     await page.keyboard.press("Enter");
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
 
     const leadProfileSelector = "#main > div > div > div.pv2.ph0.mb2.artdeco-card > div > a > div > div.search-nec__hero-kcard-v2-content.t-black--light > div.t-roman.t-sans > div > span.entity-result__title-line.entity-result__title-line--2-lines > span > a > span > span:nth-child(1)";
 
@@ -79,9 +74,13 @@ async function start() {
     console.log("Lead name: " + leadName);
 
     const leadLinkedInUrl = await getLeadLinkedInUrl();
-    console.log("Lead LinkedIn url: " + leadLinkedInUrl);
+    console.log("Lead's LinkedIn url: " + leadLinkedInUrl);
 
-    let data = leadName + ";" + leadLinkedInUrl + "\n";
+    let data;
+
+    if (leadLinkedInUrl.includes("keywords")) {
+      data = leadName + ";" + "-" + "\n";
+    } else data = leadName + ";" + leadLinkedInUrl + "\n";
 
     await writeInCSVFile(data);
 
