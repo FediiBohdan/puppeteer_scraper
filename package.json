@@ -2,7 +2,7 @@
   "name": "web_scraper",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dealroomParser.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "csv": "^6.0.5",
-    "exceljs": "^4.3.0",
-    "puppeteer": "^14.1.0",
-    "xlsx": "^0.18.5"
+    "puppeteer": "^14.1.0"
   },
   "devDependencies": {
     "prettier": "2.6.2"
